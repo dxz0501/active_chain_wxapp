@@ -1,0 +1,52 @@
+<!--pages/main/record.wxml-->
+<view class="weui-cell">
+<view class="weui-cell__hd" style="position: center;margin-right: 10px;">
+<image src="../../lib/img/{{type}}.png" style="width: 50px; height: 50px; display: block"/>
+</view>
+<view class="weui-cell__bd">
+<view>{{typeName}}</view>
+<view style="font-size: 13px;color: #888888;">记录信息</view>
+</view>
+</view>
+
+<view class="weui-cells__title">填报信息</view>
+            <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">运动日期</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <picker mode="date" value="{{maxDate}}" start="{{minDate}}" end="{{maxDate}}" bindchange="bindDateChange">
+                        <view class="weui-input">{{date}}</view>
+                    </picker>
+                </view>
+            </view>
+
+            <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">计时/计次</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <input class="weui-input" type='digit' placeholder="请输入计时/计次数量" maxlength='8'bindinput="bindAmountChange" value='{{curStr}}'/>
+                </view>
+                <view wx:if="{{ifAmountErr}}"> 
+                <view class="weui-cell__ft">
+                    <icon type="warn" size="23" color="#E64340"></icon>
+                </view>
+            </view>
+            </view>
+
+<view class="weui-cells__tips">计次/计时根据运动单位填写，表示1次或1小时</view>
+            <view class="weui-cells__title">运动备注</view>
+        <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell">
+                <view class="weui-cell__bd">
+                    <textarea class="weui-textarea" placeholder="说两句吧！" style="height: 3.3em" />
+                </view>
+            </view>
+        
+        </view>
+        <view class="weui-btn-area">
+            <button class="weui-btn" type="primary" bindtap="onTapSubmit">提交保存</button>
+        </view>
+
+

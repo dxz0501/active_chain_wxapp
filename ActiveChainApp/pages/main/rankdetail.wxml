@@ -1,0 +1,35 @@
+<!--pages/main/rankdetail.wxml-->
+<view class="weui-cells__title">{{userShow}}</view>
+<view class="weui-cells__title">从 {{dateFrom}} 至 {{dateTo}} 的明细：</view>
+
+<view wx:for="{{markingList}}" wx:for-item="item">
+
+      <view class="weui-form-preview">
+        <view class="weui-form-preview__hd">
+          <view class="weui-form-preview__label">积分变动</view>
+          <view class="weui-form-preview__value_in-hd">+{{item.marking}}</view>
+        </view>
+        <view class="weui-form-preview__bd">
+          <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">运动类型</view>
+            <view class="weui-form-preview__value">{{item.info.acType}}</view>
+          </view>
+          <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">运动量/次</view>
+            <view class="weui-form-preview__value">{{item.info.acAmount}} h/t</view>
+          </view>
+          <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">备注</view>
+            <view class="weui-form-preview__value">{{item.info.acNote}}</view>
+          </view>
+
+        <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">运动时间</view>
+            <view class="weui-form-preview__value">{{item.info.acDate}}</view>
+          </view>
+
+        </view>
+        <view class="weui-cells__title">  </view>
+      </view>
+
+</view>

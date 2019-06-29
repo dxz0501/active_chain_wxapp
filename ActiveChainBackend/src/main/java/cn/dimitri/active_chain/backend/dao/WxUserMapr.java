@@ -16,25 +16,27 @@ public interface WxUserMapr {
             @Result(property = "uNickname", column = "u_nickname"),
             @Result(property = "uGender", column = "u_gender"),
             @Result(property = "uWeight", column = "u_weight"),
-            @Result(property = "uPrivacy", column = "u_privacy")
+            @Result(property = "uPrivacy", column = "u_privacy"),
+            @Result(property = "wxAvatarurl", column = "wx_avatarurl")
     }
     )
     // 查询一个
     @Select("SELECT * FROM WX_USER WHERE wx_uid = #{uid}")
-    WxUser selectOne(String uid);
+    WxUser selectOne(@Param("uid") String uid);
 
     @ResultMap("WX_USER")
     @Select("SELECT * FROM WX_USER")
     List<WxUser> selectAll();
 
-    @Insert("INSERT INTO WX_USER VALUES(#{wxUid}, #{wxNickName}, #{uNickname}, #{uGender}, #{uWeight}, #{uPrivacy})")
+    @Insert("INSERT INTO WX_USER VALUES(#{wxUid}, #{wxNickname}, #{wxAvatarurl}, #{uNickname}, #{uGender}, #{uWeight}, #{uPrivacy})")
     int insertUser(WxUser wxUser);
 
-    @Update("UPDATE WX_USER SET wx_nickname = #{wxNickName}, " +
+    @Update("UPDATE WX_USER SET wx_nickname = #{wxNickname}, " +
+            " wx_avatarurl = #{wxAvatarurl}, " +
             " u_nickname = #{uNickname}, " +
             " u_gender = #{uGender}, " +
             " u_weight = #{uWeight}, " +
-            " u_privacy = #{uPrivacy}, " +
+            " u_privacy = #{uPrivacy} " +
             " WHERE wx_uid = #{wxUid}")
     int updateUser(WxUser wxUser);
 }

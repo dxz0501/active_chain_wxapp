@@ -5,7 +5,9 @@
     "pages/web/webview",
     "pages/data/datamgr",
     "pages/conf/config",
-    "pages/main/ranks"
+    "pages/main/ranks",
+    "pages/main/record",
+    "pages/main/rankdetail"
   ],
   "window": {
     "backgroundTextStyle": "light",

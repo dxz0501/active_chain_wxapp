@@ -25,19 +25,19 @@
       <view class="weui-loadmore weui-loadmore_line">
         <view class="weui-loadmore__tips weui-loadmore__tips_in-line">{{userInfo.nickName}}，请设置您的个性化信息</view>
       </view>
-      <view class="weui-cells__title">姓名（用于排行显示）</view>
+      <view class="weui-cells__title">姓名（用于首页及排行显示）</view>
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
             <view class="weui-label">姓名</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="请输入姓名" disabled='{{inputDisabled}}' />
+            <input class="weui-input" placeholder="请输入姓名" disabled='{{inputDisabled}}' value='{{userInputName}}' bindinput='userNameChange'/>
           </view>
         </view>
       </view>
 
-      <view class="weui-cells__title">性别（不可更改）</view>
+      <!--view class="weui-cells__title">性别（不可更改）</view>
       <view class="weui-cells weui-cells_after-title">
         <radio-group bindchange="radioChange">
           <label class="weui-cell weui-check__label" wx:for="{{genders}}" wx:key="value">
@@ -48,14 +48,14 @@
             </view>
           </label>
         </radio-group>
-      </view>
+      </view-->
 
       <view class="weui-cells__title">体重（KG）</view>
       <view class="page__bd page__bd_spacing">
-        <slider show-value min="40" max="140" step="1" value="70" disabled='{{inputDisabled}}' />
+        <slider show-value min="40" max="140" step="1" value="{{userWeight}}" disabled='{{inputDisabled}}' bindchange='userWeightChange'/>
       </view>
 
-      <view class="weui-cells__title">标签（多个标签请用 ; 分隔）</view>
+      <!--view class="weui-cells__title">标签（多个标签请用 ; 分隔）</view>
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell weui-cell_input">
           <view class="weui-cell__hd">
@@ -65,17 +65,17 @@
             <input class="weui-input" placeholder="请输入标签名" disabled='{{inputDisabled}}' />
           </view>
         </view>
-      </view>
-
+      </view-->
+<!-->
       <view class="weui-cells__title">隐私选项</view>
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell weui-cell_switch">
           <view class="weui-cell__bd">允许其他用户查看数据记录</view>
           <view class="weui-cell__ft">
-            <switch checked disabled='{{inputDisabled}}' />
+            <switch checked disabled='{{inputDisabled}}' value='{{userPivacy}}'/>
           </view>
         </view>
-      </view>
+      </view><-->
 
       <view class="button-sp-area">
         <block wx:if="{{inputDisabled}}">

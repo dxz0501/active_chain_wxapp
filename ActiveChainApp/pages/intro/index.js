@@ -1,6 +1,6 @@
 // pages/intro/index.js
-let timer
-
+const app = getApp()
+var api = require('../../utils/api.js')
 Page({
 
   /**
@@ -8,25 +8,37 @@ Page({
    */
   data: {
     slogan1: "链上世界",
-    slogan2: "链动生活"
+    slogan2: "链动生活",
+    userPass: ''
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    // var dt = new Date();
+    // dt.setDate(1);
+    // dt.setMonth(11);
+    // console.log(dt)
+    // dt.setMonth(dt.getMonth() + 1);
+    // dt.setDate(dt.getDate() - 1)
+    // console.log(dt)
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    timer = setTimeout(function () {
-      wx.switchTab({
-        url: '../main/mainui',
-      })
-    }, 2018);
+    app.isAuthCallback = (data) => {
+      if(data.needAuth == 1){ // 不需要输入密码
+          setTimeout(function () {
+          wx.switchTab({
+            url: '../main/mainui',
+          })
+        }, 0);
+      }
+    }
+    api.isAuth(app.isAuthCallback)
   },
 
   /**
@@ -69,5 +81,29 @@ Page({
    */
   onShareAppMessage: function () {
   
-  }
+  },
+
+  onTapSubmit: function(){
+    if (this.data.userPass == "668899"){
+      wx.switchTab({
+          url: '../main/mainui',
+        })
+    }else{
+      wx.showModal({
+        content: '内测鉴权失败，请联系开发者！',
+        showCancel: false,
+        success: function (res) {
+          if (res.confirm) {
+            console.log('')
+          }
+        }
+      });
+    }
+  },
+
+  passInput: function (e) {
+    this.setData({
+      userPass: e.detail.value
+    })
+  },
 })

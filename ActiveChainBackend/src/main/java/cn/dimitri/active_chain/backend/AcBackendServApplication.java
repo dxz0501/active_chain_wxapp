@@ -2,12 +2,21 @@ package cn.dimitri.active_chain.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class AcBackendServApplication {
+@EnableScheduling
+public class AcBackendServApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(AcBackendServApplication.class, args);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(AcBackendServApplication.class);
     }
 
 }

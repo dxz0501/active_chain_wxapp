@@ -1,4 +1,6 @@
 //app.js
+var api = require('utils/api.js')
+
 App({
   globalData: {
     isUserAuth: false,
@@ -8,12 +10,12 @@ App({
       "basketball": "篮球",
       "bicycle": "骑行",
       "football": "足球",
-      "gym": "健身",
+      "gym": "自由锻炼",
       "pingpong": "乒乓",
       "running": "跑步",
       "swimming": "游泳",
-      "walking": "步行"
-    },
+      "walking": "万步"
+    }
   },
 
   onLaunch: function() {
@@ -22,16 +24,21 @@ App({
     wx.login({
       success: function(res) {
         if (res.code) {
-          console.log('jsCode - ' + res.code)
-          //发起网络请求
+          console.log('User Login Success: ' + res.code)
           wx.request({
-            url: 'https://test.com/onLogin',
+            url: api.serverPrefix() + '/wxauth/' + res.code, 
             data: {
-              code: res.code
+            },
+            header: {
+              'content-type': 'application/json' // 默认值
+            },
+            success(reqres) {
+              console.log(reqres.data["openid"])
+              api.userOpenId = reqres.data["openid"]
             }
           })
         } else {
-          console.log('登录失败！' + res.errMsg)
+          console.log('User Login Fail: ' + res.errMsg)
         }
       }
     });

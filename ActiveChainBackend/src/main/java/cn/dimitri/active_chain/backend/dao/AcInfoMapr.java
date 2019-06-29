@@ -21,12 +21,12 @@ public interface AcInfoMapr {
     )
     // 带条件查询
     @Select("SELECT * FROM AC_INFO WHERE wx_uid = #{uid} AND ac_date >= #{sdate} AND ac_date <= #{tdate}")
-    List<AcInfo> selectRecords(String uid, String sdate, String tdate);
+    List<AcInfo> selectRecords(@Param("uid") String uid, @Param("sdate") String sdate, @Param("tdate") String tdate);
 
     @Insert("INSERT INTO AC_INFO(wx_uid, ac_type, ac_amount, ac_note, ac_date) " +
             "values(#{wxUid}, #{acType}, #{acAmount}, #{acNote}, #{acDate})")
     int insertInfo(AcInfo acInfo);
 
     @Delete("DELETE FROM AC_INFO WHERE sid = #{sid}")
-    int deleteInfo(long sid);
+    int deleteInfo(@Param("sid") long sid);
 }

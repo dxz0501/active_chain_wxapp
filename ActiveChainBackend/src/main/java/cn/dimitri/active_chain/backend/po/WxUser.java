@@ -1,7 +1,5 @@
 package cn.dimitri.active_chain.backend.po;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class WxUser {
 
 
@@ -10,6 +8,8 @@ public class WxUser {
     private String wxNickname;
 
     private String uNickname;
+
+    private String wxAvatarurl;
 
     private int uGender;
 
@@ -66,5 +66,13 @@ public class WxUser {
 
     public void setWxNickname(String wxNickname) {
         this.wxNickname = wxNickname;
+    }
+
+    public String getWxAvatarurl() {
+        return wxAvatarurl;
+    }
+
+    public void setWxAvatarurl(String wxAvatarurl) {
+        this.wxAvatarurl = wxAvatarurl;
     }
 }

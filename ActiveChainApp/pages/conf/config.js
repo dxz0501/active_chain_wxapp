@@ -1,5 +1,6 @@
 // pages/conf/config.js
 const app = getApp()
+var api = require('../../utils/api.js')
 
 Page({
 
@@ -8,6 +9,7 @@ Page({
    */
   data: {
     userInfo: {},
+    userDBInfo: {},
     isUserAuth: false,
     genders: [{
         'name': '男',
@@ -18,7 +20,9 @@ Page({
         'value': 2
       }
     ],
-    inputDisabled: true
+    inputDisabled: true,
+    userInputName: '',
+    userWeight: 65
   },
 
   /**
@@ -32,7 +36,23 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
-
+    app.userUpdateConfigCallback = (data) => {
+      console.log('app.userUpdateConfigCallback:')
+      console.log(data)
+      if(data.res == true){
+        wx.showToast({
+          title: '已修改',
+          icon: 'success',
+          duration: 2000
+        });
+      }else{
+        wx.showToast({
+          title: '修改失败,请确认信息!',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    }
   },
 
   /**
@@ -43,6 +63,18 @@ Page({
       userInfo: app.globalData.userInfo,
       isUserAuth: app.globalData.isUserAuth
     })
+    app.userQueryConfigCallback = (data) => {
+      console.log('app.userQueryConfigCallback:')
+      console.log(data)
+      this.setData({
+        userDBInfo: data,
+        userInputName: data.uNickname,
+        userWeight: data.uWeight
+      })
+    }
+    if (app.globalData.isUserAuth) {
+      api.userQuery(api.userOpenId, app.userQueryConfigCallback)
+    }
   },
 
   /**
@@ -109,5 +141,30 @@ Page({
     this.setData({
       inputDisabled: true
     })
+    // 开始处理业务提交
+    if (app.globalData.isUserAuth) {
+      console.log(this.data.userInfo)
+      console.log(this.data.userInputName)
+      api.userUpdate(this.data.userDBInfo.wxUid,
+        this.data.userDBInfo.wxNickName,
+        this.data.userDBInfo.wxAvatar,
+        this.data.userInputName,
+        this.data.userDBInfo.uGender,
+        this.data.userWeight,
+        this.data.userDBInfo.uPrivacy,
+        app.userUpdateConfigCallback)
+    }
   },
+
+  userNameChange: function(e){
+    this.setData({
+      userInputName: e.detail.value,
+    })
+  },
+
+  userWeightChange: function(e){
+    this.setData({
+      userWeight: e.detail.value
+    })
+  }
 })

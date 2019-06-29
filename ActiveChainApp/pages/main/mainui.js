@@ -1,5 +1,6 @@
 // pages/main/mainui.js
 const app = getApp()
+var api = require('../../utils/api.js')
 
 Page({
   /**
@@ -9,7 +10,12 @@ Page({
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     isUserAuth: false,
     sportType: {},
-    userInfo: {}
+    userInfo: {},
+    userScore: '',
+    userRank: '',
+    userScoreLast: '',
+    userRankLast: '',
+    uShowName:''
   },
 
   /**
@@ -20,6 +26,8 @@ Page({
       sportType: app.globalData.sportType
     })
     if (app.globalData.userInfo) {
+      api.userInfo = app.globalData.userInfo
+      api.hasUserInfo = true
       this.setData({
         userInfo: app.globalData.userInfo,
         isUserAuth: app.globalData.isUserAuth
@@ -30,6 +38,8 @@ Page({
       app.userInfoReadyCallback = res => {
         app.globalData.userInfo = res.userInfo
         app.globalData.isUserAuth = true
+        api.userInfo = res.userInfo
+        api.hasUserInfo = true
         this.setData({
           userInfo: res.userInfo,
           isUserAuth: true
@@ -41,6 +51,8 @@ Page({
         success: res => {
           app.globalData.userInfo = res.userInfo
           app.globalData.isUserAuth = true
+          api.userInfo = res.userInfo
+          api.hasUserInfo = true
           this.setData({
             userInfo: app.globalData.userInfo,
             isUserAuth: app.globalData.isUserAuth
@@ -56,13 +68,67 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
+    
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    
+    app.userUpdateCallback = (data) => {
+      console.log('app.userUpdateCallback:')
+      console.log(data)
+    }
+    app.userQueryCallback = (data) => {
+      console.log('app.userQueryCallback:')
+      console.log(data)
+      if (data == '' || data == null) {
+        api.userUpdate(api.userOpenId,
+          app.globalData.userInfo.nickName,
+          app.globalData.userInfo.avatarUrl,
+          'N/A',
+          app.globalData.userInfo.gender,
+          '65',
+          '0',
+          app.userUpdateCallback)
+      } else {
+        api.userUpdate(api.userOpenId,
+          app.globalData.userInfo.nickName,
+          app.globalData.userInfo.avatarUrl,
+          data.uNickname,
+          app.globalData.userInfo.gender,
+          data.uWeight,
+          data.uPrivacy,
+          app.userUpdateCallback)
+        this.setData({
+          uShowName: data.uNickname
+        })
+      }
+    }
+    app.statMStatCallback = (data) => {
+      console.log('app.statMStatCallback:')
+      console.log(data)
+      this.setData({
+        userScore: data.marking,
+        userRank: data.rank,
+        userScoreLast: data.markingLast,
+        userRankLast: data.rankLast,
+      })
+      if (data.rank > 100) {
+        this.setData({
+          userRank: '100+'
+        })
+      }
+      if(data.rankLast > 100) {
+        this.setData({
+          userRankLast: '100+'
+        })
+      }
+    }
+    if (app.globalData.isUserAuth) {
+      api.userQuery(api.userOpenId, app.userQueryCallback)
+      api.statMStat(api.userOpenId, app.statMStatCallback)
+    }
   },
 
   /**
@@ -115,6 +181,8 @@ Page({
       userInfo: app.globalData.userInfo,
       isUserAuth: app.globalData.isUserAuth
     })
+    api.userQuery(api.userOpenId, app.userQueryCallback)
+    api.statMStat(api.userOpenId, app.statMStatCallback)
   },
 
   onTapSportType: function(e) {
@@ -125,7 +193,15 @@ Page({
         duration: 3000
       });
     }else{
-      console.log(e)
+      console.log(e.currentTarget.id)
+      wx.navigateTo({
+        url: 'record?type=' + e.currentTarget.id,
+      })
     }
-  }
+  },
+
+userUpdateCallback: function(data){
+  console.log(data)
+}
+
 })

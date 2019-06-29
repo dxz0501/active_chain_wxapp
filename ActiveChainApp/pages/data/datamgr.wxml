@@ -37,83 +37,45 @@
         </view>
       </view>
 
-      <view class="weui-cells__title">显示从 {{dateFrom}} 至 {{dateTo}} 的数据：</view>
+<view class="weui-cells__title">筛选期间总得分：{{totalMarking}}</view>
+<view class="weui-cells__title">显示从 {{dateFrom}} 至 {{dateTo}} 的明细：</view>
+      
+
+<view wx:for="{{markingList}}" wx:for-item="item">
 
       <view class="weui-form-preview">
         <view class="weui-form-preview__hd">
           <view class="weui-form-preview__label">积分变动</view>
-          <view class="weui-form-preview__value_in-hd">+2.0</view>
+          <view class="weui-form-preview__value_in-hd">+{{item.marking}}</view>
         </view>
         <view class="weui-form-preview__bd">
           <view class="weui-form-preview__item">
             <view class="weui-form-preview__label">运动类型</view>
-            <view class="weui-form-preview__value">足球</view>
+            <view class="weui-form-preview__value">{{item.info.acType}}</view>
           </view>
           <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">运动量/次</view>
+            <view class="weui-form-preview__value">{{item.info.acAmount}} h/t</view>
+          </view>
+          <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">备注</view>
+            <view class="weui-form-preview__value">{{item.info.acNote}}</view>
+          </view>
+
+<view class="weui-form-preview__item">
             <view class="weui-form-preview__label">运动时间</view>
-            <view class="weui-form-preview__value">2h</view>
+            <view class="weui-form-preview__value">{{item.info.acDate}}</view>
           </view>
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">备注</view>
-            <view class="weui-form-preview__value">大球2小时，比赛</view>
-          </view>
+
         </view>
         <view class="weui-form-preview__ft">
-          <navigator class="weui-form-preview__btn weui-form-preview__btn_default" hover-class="weui-form-preview__btn_active">删除</navigator>
-          <navigator class="weui-form-preview__btn weui-form-preview__btn_primary" hover-class="weui-form-preview__btn_active">编辑</navigator>
+          <button class="weui-form-preview__btn weui-form-preview__btn_warning" hover-class="weui-form-preview__btn_active" bindtap='deleteBySid' data-sid="{{item.info.sid}}">删除</button>
+          <!--navigator class="weui-form-preview__btn weui-form-preview__btn_primary" hover-class="weui-form-preview__btn_active">编辑</navigator-->
         </view>
+        <view class="weui-cells__title">  </view>
       </view>
 
-      <view class="weui-form-preview">
-        <view class="weui-form-preview__hd">
-          <view class="weui-form-preview__label">积分变动</view>
-          <view class="weui-form-preview__value_in-hd">+4.0</view>
-        </view>
-        <view class="weui-form-preview__bd">
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">运动类型</view>
-            <view class="weui-form-preview__value">乒乓球</view>
-          </view>
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">运动时间</view>
-            <view class="weui-form-preview__value">1小时</view>
-          </view>
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">备注</view>
-            <view class="weui-form-preview__value">双打</view>
-          </view>
-        </view>
-        <view class="weui-form-preview__ft">
-          <navigator class="weui-form-preview__btn weui-form-preview__btn_default" hover-class="weui-form-preview__btn_active">删除</navigator>
-          <navigator class="weui-form-preview__btn weui-form-preview__btn_primary" hover-class="weui-form-preview__btn_active">编辑</navigator>
-        </view>
-      </view>
-
-      <view class="weui-form-preview">
-        <view class="weui-form-preview__hd">
-          <view class="weui-form-preview__label">积分变动</view>
-          <view class="weui-form-preview__value_in-hd">+3.0</view>
-        </view>
-        <view class="weui-form-preview__bd">
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">运动类型</view>
-            <view class="weui-form-preview__value">步行</view>
-          </view>
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">运动事件</view>
-            <view class="weui-form-preview__value">3天</view>
-          </view>
-          <view class="weui-form-preview__item">
-            <view class="weui-form-preview__label">备注</view>
-            <view class="weui-form-preview__value">当日步行累计1万步</view>
-          </view>
-        </view>
-        <view class="weui-form-preview__ft">
-          <navigator class="weui-form-preview__btn weui-form-preview__btn_default" hover-class="weui-form-preview__btn_active">辅助操作</navigator>
-          <navigator class="weui-form-preview__btn weui-form-preview__btn_primary" hover-class="weui-form-preview__btn_active">操作</navigator>
-        </view>
-      </view>
-
+</view>
     </view>
   </view>
 </block>

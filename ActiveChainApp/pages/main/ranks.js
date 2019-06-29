@@ -1,5 +1,7 @@
 // pages/main/ranks.js
 const app = getApp()
+var api = require('../../utils/api.js')
+
 Page({
 
   /**
@@ -7,21 +9,44 @@ Page({
    */
   data: {
     isUserAuth: false,
-    userInfo: {}
+    userInfo: {},
+    rankList: [],
+    month: '',
+    monthDisplay: ''
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    console.log(options)
+    var str = ''
+    if(options.month == "this"){
+      str = "本"
+    }else{
+      str = "上"
+    }
+    this.setData({
+      month: options.month,
+      monthDisplay: str
+    })
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-  
+    app.statMRankListCallback = (data) =>{
+      console.log(data)
+      this.setData({
+        rankList: data
+      })
+    }
+    if(this.data.month == "this"){
+      api.statMRankList(app.statMRankListCallback);
+    }else{
+      api.statMRankListLast(app.statMRankListCallback);
+    }
   },
 
   /**

@@ -17,18 +17,24 @@
           </view>
           <view class="weui-cell__bd">
             <view>
+              <text>{{uShowName}} [</text>
               <open-data type="userNickName"></open-data>
+              <text>]</text>
               <block wx:if="{{userInfo.gender == 1}}"> ♂</block>
               <block wx:if="{{userInfo.gender == 2}}"> ♀</block>
             </view>
             <view style="font-size: 13px;color: #888888;">
-              本月运动积分 X 分
+              本月运动积分 {{userScore}} 分 / 上月运动积分 {{userScoreLast}} 分
             </view>
           </view>
         </view>
         <view class="weui-cells weui-cells_after-title">
-          <navigator url="ranks" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
-            <view class="weui-cell__bd">本月排在第 X 名</view>
+          <navigator url="ranks?month=this" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+            <view class="weui-cell__bd">本月排在好友圈第 {{userRank}} 名</view>
+            <view class="weui-cell__ft weui-cell__ft_in-access">点击查看</view>
+          </navigator>
+          <navigator url="ranks?month=last" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+            <view class="weui-cell__bd">上月排在好友圈第 {{userRankLast}} 名</view>
             <view class="weui-cell__ft weui-cell__ft_in-access">点击查看</view>
           </navigator>
         </view>
@@ -41,7 +47,7 @@
     <view class="weui-cells__title">请选择项目进行运动登记：</view>
     <view class="weui-grids">
       <block wx:for="{{sportType}}" wx:key="index">
-        <view class="weui-grid" hover-class="weui-grid_active" bindtap='onTapSportType' data-typeName="{{index}}">
+        <view id="{{index}}" class="weui-grid" hover-class="weui-grid_active" bindtap='onTapSportType' data-typeName="{{index}}">
           <image class="weui-grid__icon" src="../../lib/img/{{index}}.png" />
           <view class="weui-grid__label">{{item}}</view>
         </view>
@@ -51,8 +57,8 @@
 </view>
 
 <view class="weui-footer weui-footer_fixed-bottom">
-  <view class="weui-footer__text">链动小程序 © Copyright 2018</view>
-  <view class="weui-footer__text">Powered By Dimitri.Du</view>
+  <view class="weui-footer__text">链动小程序 © Copyright 2019</view>
+  <view class="weui-footer__text">Powered By Dimitri.D</view>
   <view class="weui-footer__links">
     <!-- <view bindtap='goAelfIo' class="weui-footer__link">aelf.io</view> -->
   </view>

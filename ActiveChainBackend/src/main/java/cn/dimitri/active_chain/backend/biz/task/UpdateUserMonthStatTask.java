@@ -8,17 +8,14 @@ import cn.dimitri.active_chain.backend.po.WxUser;
 import cn.dimitri.active_chain.backend.util.DateUtils;
 import cn.dimitri.active_chain.backend.vo.AcInfoRes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-//@Component
-//@Configuration      //1.主要用于标记配置类，兼备Component的效果。
-//@EnableScheduling   // 2.开启定时任务
+@Component
 public class UpdateUserMonthStatTask {
 
     private final WxUserMapr userDao;
@@ -32,7 +29,8 @@ public class UpdateUserMonthStatTask {
         this.infoService = infoService;
     }
 
-//    @Scheduled(cron = "0 0 0/1 * * ? ") // 每小时一次定时任务
+    @Scheduled(cron = "0 0,15,30,45 0-23 * * *  ") // 每15min一次定时任务
+//    @Scheduled(cron = "0 0,5,10,15,20,25,30,35,40,45,50,55 0-23 * * *  ") // 每五分钟一次定时任务
     public void updateUserMonthTotalMarking(){
         List<WxUser> userLst = userDao.selectAll();
         for(int n=0; n<userLst.size(); n++) {
@@ -40,29 +38,73 @@ public class UpdateUserMonthStatTask {
             if(user == null) continue;
             String uid = user.getWxUid();
 
-            double totalMarking = 0;
+            // this month
+            {
+                double totalMarking = 0;
 
-            String tDate = DateUtils.date2String(new Date());
-            String sDate = tDate.substring(0, 6) + "01";
+                String tDate = DateUtils.date2String(new Date());
+                String sDate = tDate.substring(0, 8) + "01";
 
-            List<AcInfoRes> infoResLst = this.infoService.getInfoRecords(uid, sDate, tDate);
-            for (int i = 0; i < infoResLst.size(); i++) {
-                AcInfoRes infoRes = infoResLst.get(i);
-                if (infoRes == null) continue;
-                totalMarking += infoRes.getMarking();
+                List<AcInfoRes> infoResLst = this.infoService.getInfoRecords(uid, sDate, tDate);
+                for (int i = 0; i < infoResLst.size(); i++) {
+                    AcInfoRes infoRes = infoResLst.get(i);
+                    if (infoRes == null) continue;
+                    totalMarking += infoRes.getMarking();
+                }
+
+                if (totalMarking == 0) continue;
+                AcStat acStat = statDao.selectOne(uid);
+                if (acStat == null) {
+                    acStat = new AcStat();
+                    acStat.setWxUid(uid);
+                    acStat.setmMarking(totalMarking);
+                    acStat.setmRank(statDao.getMarkingRank(totalMarking + 0.001) + 1);
+                    statDao.insertStat(acStat);
+                } else {
+                    acStat.setmMarking(totalMarking);
+                    acStat.setmRank(statDao.getMarkingRank(totalMarking + 0.001) + 1);
+                    statDao.updateStat(acStat);
+                }
             }
 
-            if (totalMarking == 0) return;
-            AcStat acStat = statDao.selectOne(uid);
-            if (acStat == null) {
-                acStat = new AcStat();
-                acStat.setWxUid(uid);
-                acStat.setmMarking(totalMarking);
-                acStat.setmRank(statDao.getMarkingRank(totalMarking));
-                statDao.insertStat(acStat);
-            } else {
-                acStat.setmMarking(totalMarking);
-                statDao.updateStat(acStat);
+            // last month
+            {
+                double totalMarking = 0;
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.MONTH, -1);
+                calendar.set(Calendar.DATE, 1);
+                Date dateFrom = calendar.getTime();
+
+                calendar.setTime(new Date());
+                calendar.set(Calendar.DATE, 1);
+                calendar.add(Calendar.DATE, -1);
+                Date dateTo = calendar.getTime();
+
+                String tDate = DateUtils.date2String(dateTo);
+                String sDate = DateUtils.date2String(dateFrom);
+
+                List<AcInfoRes> infoResLst = this.infoService.getInfoRecords(uid, sDate, tDate);
+                for (int i = 0; i < infoResLst.size(); i++) {
+                    AcInfoRes infoRes = infoResLst.get(i);
+                    if (infoRes == null) continue;
+                    totalMarking += infoRes.getMarking();
+                }
+
+                if (totalMarking == 0) continue;
+                AcStat acStat = statDao.selectOne(uid);
+                if (acStat == null) {
+                    acStat = new AcStat();
+                    acStat.setWxUid(uid);
+                    acStat.setmMarkingLast(totalMarking);
+                    acStat.setmRankLast(statDao.getMarkingRankLast(totalMarking + 0.001) + 1);
+                    statDao.insertStat(acStat);
+                } else {
+                    acStat.setmMarkingLast(totalMarking);
+                    acStat.setmRankLast(statDao.getMarkingRankLast(totalMarking + 0.001) + 1);
+                    statDao.updateStat(acStat);
+                }
             }
         }
     }

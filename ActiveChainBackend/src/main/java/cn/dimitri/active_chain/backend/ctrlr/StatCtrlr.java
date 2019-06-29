@@ -33,5 +33,8 @@ public class StatCtrlr {
         return acInfoService.getUserMonthRankDetail();
     }
 
-
+    @RequestMapping(value="/mranklistlast")
+    public List<RankDetail> getUserMonthRankListLast(){
+        return acInfoService.getUserMonthRankDetailLast();
+    }
 }

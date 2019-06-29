@@ -21,7 +21,18 @@ const formatDate = date => {
   return [year, month, day].map(formatNumber).join('-')
 }
 
+const isNumber = val => {
+  var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+  var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+  if (regPos.test(val) || regNeg.test(val)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 module.exports = {
   formatTime: formatTime,
-  formatDate: formatDate
+  formatDate: formatDate,
+  isNumber: isNumber
 }

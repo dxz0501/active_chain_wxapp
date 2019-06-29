@@ -22,7 +22,7 @@ public class UserCtrlr {
     }
 
     @PostMapping(value="/update")
-    public OpeRet addUser(@RequestBody WxUser wxUser){
+    public OpeRet addUser(WxUser wxUser){
         OpeRet ret = new OpeRet();
         ret.setRes(userService.insertOrUpdateUser(wxUser));
         return ret;

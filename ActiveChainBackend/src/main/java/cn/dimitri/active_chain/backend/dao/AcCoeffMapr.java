@@ -16,7 +16,8 @@ public interface AcCoeffMapr {
             @Result(property = "femaleCoeff", column = "female_coeff"),
             @Result(property = "fitCoeff", column = "fit_coeff"),
             @Result(property = "fatCoeff", column = "fat_coeff"),
-            @Result(property = "fitFat", column = "fit_fat")
+            @Result(property = "fitFat", column = "fit_fat"),
+            @Result(property = "needAuth", column = "need_auth")
     }
     )
     // 查询首条

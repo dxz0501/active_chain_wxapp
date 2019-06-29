@@ -7,7 +7,6 @@ import cn.dimitri.active_chain.backend.vo.OpeRet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,7 +27,7 @@ public class InfoCtrlr {
     }
 
     @PostMapping(value="/add")
-    public OpeRet addInfo(@RequestBody AcInfo acInfo){
+    public OpeRet addInfo( AcInfo acInfo){
         OpeRet ret = new OpeRet();
         ret.setRes(acInfoService.insertInfo(acInfo));
         return ret;
@@ -38,6 +37,14 @@ public class InfoCtrlr {
     public OpeRet delInfo(@PathVariable(name = "sid") long sid){
         OpeRet ret = new OpeRet();
         ret.setRes(acInfoService.deleteInfo(sid));
+        return ret;
+    }
+
+    @RequestMapping(value="/isauth")
+    public OpeRet isAuth(){
+        OpeRet ret = new OpeRet();
+        ret.setRes(true);
+        ret.setNeedAuth(acInfoService.getNeedAuth());
         return ret;
     }
 }

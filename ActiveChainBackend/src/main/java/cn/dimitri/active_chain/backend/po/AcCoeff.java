@@ -6,6 +6,7 @@ public class AcCoeff {
     private double fitCoeff;
     private double fatCoeff;
     private double fitFat;
+    private int needAuth;
 
     public double getMaleCoeff() {
         return maleCoeff;
@@ -45,5 +46,13 @@ public class AcCoeff {
 
     public void setFitFat(double fitFat) {
         this.fitFat = fitFat;
+    }
+
+    public int getNeedAuth() {
+        return needAuth;
+    }
+
+    public void setNeedAuth(int needAuth) {
+        this.needAuth = needAuth;
     }
 }

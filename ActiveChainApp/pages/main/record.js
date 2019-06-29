@@ -1,6 +1,7 @@
 // pages/main/record.js
 const app = getApp()
 var util = require('../../utils/util.js')
+var api = require('../../utils/api.js')
 
 Page({
 
@@ -15,6 +16,7 @@ Page({
     date: '',
     amount: 1,
     ifAmountErr: true,
+    note: ''
   },
 
   /**
@@ -38,7 +40,28 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
+    app.infoAddCallback = (data) => {
+      if(data.res == true){
+        wx.showToast({
+          title: '提交成功',
+          icon: 'success',
+          duration: 2000,
+          mask: true,
+          complete: function(){
+            wx.navigateBack({
 
+            })
+          }
+        });
+        
+      }else{
+        wx.showToast({
+          title: '数据提交失败!',
+          icon: 'none',
+          duration: 2000
+        });
+      }
+    }
   },
 
   /**
@@ -82,6 +105,12 @@ Page({
     })
   },
 
+  bindNoteChange: function (e) {
+    this.setData({
+      note: e.detail.value
+    })
+  },
+
   bindAmountChange: function(e){
     var val = e.detail.value
     if(util.isNumber(val)){
@@ -97,6 +126,18 @@ Page({
     this.setData({
       ifAmountErr: true
     })
+  },
+
+  onTapSubmit: function(){
+    if (this.data.ifAmountErr){
+      wx.showToast({
+        title: '输入不合法,请检查!',
+        icon: 'none',
+        duration: 2000
+      });
+    }else{
+      api.infoAdd(api.userOpenId, this.data.type, this.data.amount, this.data.note, this.data.date, app.infoAddCallback);
+    }
   },
 
   /**

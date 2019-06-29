@@ -3,7 +3,7 @@ package cn.dimitri.active_chain.backend.po;
 public class AcInfo {
     private long sid;
     private String wxUid;
-    private int acType;
+    private String acType;
     private double acAmount;
     private String acNote;
     private String acDate;
@@ -22,14 +22,6 @@ public class AcInfo {
 
     public void setWxUid(String wxUid) {
         this.wxUid = wxUid;
-    }
-
-    public int getAcType() {
-        return acType;
-    }
-
-    public void setAcType(int acType) {
-        this.acType = acType;
     }
 
     public double getAcAmount() {
@@ -54,5 +46,13 @@ public class AcInfo {
 
     public void setAcDate(String acDate) {
         this.acDate = acDate;
+    }
+
+    public String getAcType() {
+        return acType;
+    }
+
+    public void setAcType(String acType) {
+        this.acType = acType;
     }
 }

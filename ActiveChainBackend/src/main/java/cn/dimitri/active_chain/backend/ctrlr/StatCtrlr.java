@@ -2,6 +2,8 @@ package cn.dimitri.active_chain.backend.ctrlr;
 
 import cn.dimitri.active_chain.backend.biz.AcInfoService;
 import cn.dimitri.active_chain.backend.biz.UserService;
+import cn.dimitri.active_chain.backend.biz.task.UpdateUserMonthStatTask;
+import cn.dimitri.active_chain.backend.vo.OpeRet;
 import cn.dimitri.active_chain.backend.vo.RankDetail;
 import cn.dimitri.active_chain.backend.vo.RankRes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,13 @@ import java.util.List;
 public class StatCtrlr {
     private final AcInfoService acInfoService;
     private final UserService userService;
+    private final UpdateUserMonthStatTask updateUserMonthStatTask;
 
     @Autowired
-    public StatCtrlr(AcInfoService acInfoService, UserService userService) {
+    public StatCtrlr(AcInfoService acInfoService, UserService userService, UpdateUserMonthStatTask updateUserMonthStatTask) {
         this.acInfoService = acInfoService;
         this.userService = userService;
+        this.updateUserMonthStatTask = updateUserMonthStatTask;
     }
 
     @RequestMapping(value="/mstat/{wxUid}")
@@ -36,5 +40,13 @@ public class StatCtrlr {
     @RequestMapping(value="/mranklistlast")
     public List<RankDetail> getUserMonthRankListLast(){
         return acInfoService.getUserMonthRankDetailLast();
+    }
+
+    @RequestMapping(value="/reset")
+    public OpeRet resetUserRankStat(){
+        OpeRet ret = new OpeRet();
+        ret.setRes(true);
+        updateUserMonthStatTask.updateUserMonthTotalMarking();
+        return ret;
     }
 }

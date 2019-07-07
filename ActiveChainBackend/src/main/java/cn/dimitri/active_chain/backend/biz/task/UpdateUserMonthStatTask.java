@@ -52,7 +52,7 @@ public class UpdateUserMonthStatTask {
                     totalMarking += infoRes.getMarking();
                 }
 
-                if (totalMarking == 0) continue;
+//                if (totalMarking == 0) continue;
                 AcStat acStat = statDao.selectOne(uid);
                 if (acStat == null) {
                     acStat = new AcStat();
@@ -92,7 +92,7 @@ public class UpdateUserMonthStatTask {
                     totalMarking += infoRes.getMarking();
                 }
 
-                if (totalMarking == 0) continue;
+//                if (totalMarking == 0) continue;
                 AcStat acStat = statDao.selectOne(uid);
                 if (acStat == null) {
                     acStat = new AcStat();

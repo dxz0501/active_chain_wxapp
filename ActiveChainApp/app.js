@@ -20,23 +20,31 @@ App({
 
   onLaunch: function() {
     var self = this
+    wx.cloud.init()
     // 用户登录
     wx.login({
       success: function(res) {
         if (res.code) {
           console.log('User Login Success: ' + res.code)
-          wx.request({
-            url: api.serverPrefix() + '/wxauth/' + res.code, 
-            data: {
-            },
-            header: {
-              'content-type': 'application/json' // 默认值
-            },
-            success(reqres) {
-              console.log(reqres.data["openid"])
-              api.userOpenId = reqres.data["openid"]
+          wx.cloud.callFunction({
+            name: 'getOpenid',
+            complete: res => {
+              console.log(res.result.openid)
+              api.userOpenId = res.result.openid
             }
           })
+          // wx.request({
+          //   url: api.serverPrefix() + '/wxauth/' + res.code, 
+          //   data: {
+          //   },
+          //   header: {
+          //     'content-type': 'application/json' // 默认值
+          //   },
+          //   success(reqres) {
+          //     console.log(reqres.data["openid"])
+          //     api.userOpenId = reqres.data["openid"]
+          //   }
+          // })
         } else {
           console.log('User Login Fail: ' + res.errMsg)
         }

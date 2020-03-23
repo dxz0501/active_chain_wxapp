@@ -7,7 +7,10 @@
     "pages/conf/config",
     "pages/main/ranks",
     "pages/main/record",
-    "pages/main/rankdetail"
+    "pages/main/rankdetail",
+    "pages/book/bookMngr",
+    "pages/book/bookTour",
+    "pages/book/bookInfo"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -34,6 +37,12 @@
       {
         "pagePath": "pages/conf/config",
         "text": "应用设置",
+        "iconPath": "lib/img/config_gray.png",
+        "selectedIconPath": "lib/img/config.png"
+      },
+      {
+        "pagePath": "pages/book/bookMngr",
+        "text": "图书管理",
         "iconPath": "lib/img/config_gray.png",
         "selectedIconPath": "lib/img/config.png"
       }

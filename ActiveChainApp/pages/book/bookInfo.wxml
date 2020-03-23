@@ -1,0 +1,113 @@
+<!--pages/book/bookInfo.wxml-->
+
+<view class="page__bd">
+  <view class="weui-cells__title">请确认{{opstr}}书籍信息</view>
+  <view class="weui-cells weui-cells_after-title">
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">封面</view>
+      </view>
+      <view class="weui-cell__bd">
+        <image src="{{bookdata.img}}" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">书名</view>
+      </view>
+      <view class="weui-cell__bd">
+        <input class="weui-input" value="{{bookdata.title}}" disabled='true' />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">作者</view>
+      </view>
+      <view class="weui-cell__bd">
+        <input class="weui-input" value="{{bookdata.author}}" disabled='true' />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">出版社</view>
+      </view>
+      <view class="weui-cell__bd">
+        <input class="weui-input" value="{{bookdata.publisher}}" disabled='true' />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">出版时间</view>
+      </view>
+      <view class="weui-cell__bd">
+        <input class="weui-input" value="{{bookdata.pubdate}}" disabled='true' />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">售价</view>
+      </view>
+      <view class="weui-cell__bd">
+        <input class="weui-input" value="{{bookdata.price}}" disabled='true' />
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label">ISBN</view>
+      </view>
+      <view class="weui-cell__bd">
+        <input class="weui-input" value="{{bookdata.isbn}}" disabled='true' />
+      </view>
+    </view>
+
+    <block wx:if="{{op == 'borrow'}}">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">书籍编码</view>
+        </view>
+        <view class="weui-cell__bd">
+          <input class="weui-input" value="{{bookdata.bookcode}}" disabled='true' />
+        </view>
+      </view>
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">捐赠者</view>
+        </view>
+        <image class="weui-grid__icon" src='{{bookdata.donator.avatarUrl}}'></image>
+        <view class="weui-cell__bd">{{bookdata.donator.nickName}}</view>
+      </view>
+      <view class="weui-cells__title">操作</view>
+      <block wx:if="{{bookdata.borrower.avatarUrl}}">
+        <view class="weui-cell weui-cell_input">
+          <view class="weui-cell__hd">
+            <view class="weui-label">已借阅</view>
+          </view>
+          <image class="weui-grid__icon" src='{{bookdata.borrower.avatarUrl}}'></image>
+          <view class="weui-cell__bd">{{bookdata.borrower.nickName}}</view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="button-sp-area">
+          <button class="weui-btn" type="default" plain="true" bindtap='onTapBorrow'>点击借阅</button>
+        </view>
+      </block>
+    </block>
+
+    <block wx:if="{{op == 'share'}}">
+      <view class="weui-cell weui-cell_input">
+        <view class="weui-cell__hd">
+          <view class="weui-label">书籍编码*</view>
+        </view>
+        <view class="weui-cell__bd">
+          <input class="weui-input" placeholder="请输入编码" value='{{userInputBookCode}}' bindchange='bookCodeChange' />
+        </view>
+      </view>
+      <view class="weui-cells__title">操作</view>
+      <view class="button-sp-area">
+        <button class="weui-btn" type="default" plain="true" bindtap='onTapDonate'>点击捐赠</button>
+      </view>
+    </block>
+
+  </view>
+
+</view>

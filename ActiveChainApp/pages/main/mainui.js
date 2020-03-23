@@ -138,7 +138,10 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    
+    if (app.globalData.isUserAuth) {
+      api.userQuery(api.userOpenId, app.userQueryCallback)
+      api.statMStat(api.userOpenId, app.statMStatCallback)
+    }
 
   },
 

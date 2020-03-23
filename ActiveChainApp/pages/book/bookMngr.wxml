@@ -1,0 +1,65 @@
+<!--pages/book/bookMngr.wxml-->
+<block wx:if="{{!isUserAuth}}">
+  <view class="page__bd">
+    <view class="weui-msg">
+      <view class="weui-msg__icon-area">
+        <icon type="warn" size="93"></icon>
+      </view>
+      <view class="weui-msg__text-area">
+        <view class="weui-msg__title">链动小程序未获授权</view>
+        <view class="weui-msg__desc">请返回主页【授权登录】后再进行操作！</view>
+      </view>
+      <view class="weui-msg__opr-area">
+        <view class="weui-btn-area">
+          <button class="weui-btn" type="default" bindtap='returnMainUI'>返回主页</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</block>
+
+<block wx:if="{{isUserAuth}}">
+  <view class="page">
+    <view class="page__bd">
+      <view class="weui-cells__title">请选择您需要的操作：</view>
+      <view class="weui-grids">
+        <view id="bt-borrow" class="weui-grid" hover-class="weui-grid_active" bindtap='onTapBorrow'>
+          <image class="weui-grid__icon" src="../../lib/img/config.png" />
+          <view class="weui-grid__label">借阅登记</view>
+        </view>
+        <view id="bt-share" class="weui-grid" hover-class="weui-grid_active" bindtap='onTapShare'>
+          <image class="weui-grid__icon" src="../../lib/img/config.png" />
+          <view class="weui-grid__label">我要捐书</view>
+        </view>
+        <view id="bt-booktour" class="weui-grid" hover-class="weui-grid_active" bindtap='onTapBookTour'>
+          <image class="weui-grid__icon" src="../../lib/img/config.png" />
+          <view class="weui-grid__label">图书漂流</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="weui-cells__title">您正在借阅的书籍：</view>
+    <view wx:for="{{bookBorrowedList}}" wx:for-item="item">
+
+      <view class="weui-form-preview">
+        <view class="weui-form-preview__hd">
+          <view class="weui-form-preview__label">书名</view>
+          <view class="weui-form-preview__value_in-hd">{{item.title}}</view>
+        </view>
+        <view class="weui-form-preview__bd">
+          <view class="weui-form-preview__item">
+            <view class="weui-form-preview__label">借阅时间</view>
+            <view class="weui-form-preview__value">{{item.borrowDate}}</view>
+          </view>
+
+        </view>
+        <view class="weui-form-preview__ft">
+          <button class="weui-form-preview__btn weui-form-preview__btn_warning" hover-class="weui-form-preview__btn_active" bindtap='tapReturnBook' data-isbn="{{item.isbn}}">归还此书</button>
+        </view>
+        <view class="weui-cells__title"> </view>
+      </view>
+
+    </view>
+
+  </view>
+</block>

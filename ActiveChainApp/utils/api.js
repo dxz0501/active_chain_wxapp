@@ -424,6 +424,24 @@ const isAuth = (callback) => {
   // })
 }
 
+const getBookInfoByISBN = (isbn, callback) =>{
+    wx.request({
+      url: "https://route.showapi.com/1626-1?showapi_appid=163626&showapi_sign=a4de2d8293504aedaa09390a3c985dd5&isbn=" + isbn,
+    success(res) {
+      console.log(res)
+      if (res.data.showapi_res_body.ret_code == 0){
+        callback(res.data.showapi_res_body.data)
+      }else{
+        callback(null)
+      }
+      
+    },
+    fail() {
+      callback(null)
+    }
+  })
+}
+
 module.exports = {
   serverPrefix: serverPrefix,
   userOpenId: userOpenId,
@@ -437,5 +455,6 @@ module.exports = {
   infoAdd: infoAdd,
   infoQuery: infoQuery,
   infoDelete: infoDelete,
-  isAuth: isAuth
+  isAuth: isAuth,
+  getBookInfoByISBN: getBookInfoByISBN
 }

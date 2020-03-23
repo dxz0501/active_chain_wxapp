@@ -1,0 +1,24 @@
+<!--pages/book/bookTour.wxml-->
+<view class="page">
+  <view class="page__bd">
+    <view class="weui-loadmore weui-loadmore_line">
+      <view class="weui-loadmore__tips weui-loadmore__tips_in-line">图书漂流信息</view>
+    </view>
+
+    <view class="weui-cells weui-cells_after-title" wx:for="{{bookList}}" wx:for-item="item">
+          <navigator url="bookInfo?op=borrow&isbn={{item.isbn}}" 
+          class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+            <image class="weui-grid__icon" src='{{item.donator.avatarUrl}}'></image>
+              <view class="weui-cell__bd">{{item.title}}</view>
+              <view class="weui-cell__ft weui-cell__ft_in-access">
+              <block wx:if="{{item.borrower.avatarUrl}}">
+                <image class="weui-grid__icon" src='{{item.borrower.avatarUrl}}'></image>
+              </block>
+              <block wx:else>
+                <view class="weui-cell__ft weui-cell__ft_in">空闲</view>
+              </block>
+              </view>
+          </navigator>
+    </view>
+  </view>
+</view>

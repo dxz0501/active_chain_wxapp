@@ -2,6 +2,7 @@ var util = require('./util.js')
 let userOpenId = ''
 let userInfo = {}
 let hasUserInfo = false
+let userPass = false
 
 let coeff = {
   "male_coeff": 2,
@@ -119,6 +120,7 @@ const userUpdate = (wxUid, wxNickname, wxAvatarurl, uNickname, uGender, uWeight,
 }
 
 const statMStat = (uoid,callback) => {
+  console.log("INPUT - " + uoid)
   const $ = db.command.aggregate
   let ret = {}
   ret.marking = 0
@@ -456,5 +458,6 @@ module.exports = {
   infoQuery: infoQuery,
   infoDelete: infoDelete,
   isAuth: isAuth,
-  getBookInfoByISBN: getBookInfoByISBN
+  getBookInfoByISBN: getBookInfoByISBN,
+  userPass: userPass
 }

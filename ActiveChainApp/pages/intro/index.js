@@ -30,13 +30,13 @@ Page({
    */
   onReady: function () {
     app.isAuthCallback = (data) => {
-      if(data.needAuth == 1){ // 不需要输入密码
-          setTimeout(function () {
-          wx.switchTab({
-            url: '../main/mainui',
-          })
-        }, 0);
-      }
+      // if(data.needAuth == 1){ // 不需要输入密码
+      //     setTimeout(function () {
+      //     wx.switchTab({
+      //       url: '../main/mainui',
+      //     })
+      //   }, 2000);
+      // }
     }
     api.isAuth(app.isAuthCallback)
   },
@@ -84,13 +84,14 @@ Page({
   },
 
   onTapSubmit: function(){
-    if (this.data.userPass == "668899"){
+    if (this.data.userPass == "seri5"){
+      api.userPass = true
       wx.switchTab({
           url: '../main/mainui',
         })
     }else{
       wx.showModal({
-        content: '内测鉴权失败，请联系开发者！',
+        content: '鉴权失败，请联系开发者！',
         showCancel: false,
         success: function (res) {
           if (res.confirm) {

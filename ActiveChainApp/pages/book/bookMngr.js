@@ -20,7 +20,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    if (!api.userPass) {
+      wx.navigateTo({
+        url: '../intro/index',
+      })
+    }
   },
 
   /**
@@ -136,63 +140,38 @@ Page({
   },
 
   tapReturnBook: function(e){
-    // 找到对应的书
     console.log(e.currentTarget.dataset.isbn)
-    db.collection("ac_book").where({
-      "isbn": e.currentTarget.dataset.isbn
-    }).get().then(res => {
-      console.log(res)
-      if(res.data.length < 1){
-        wx.showToast({
-          title: '归还失败，请重试！',
-          icon: 'none'
-        })
-        return;
-      }else{
-        // 执行归还
-        let bookdata = res.data[0]
-        let env = this
-        console.log(bookdata)
-        db.collection("ac_book").doc(bookdata["_id"]).update({
-          data: {
-            "borrower": db.command.remove(),
-            "borrowerId": "",
-            "borrowDate": ""
-          },
-          success: res => {
-            console.log(res)
-            db.collection("ac_book_borrow").add({
-              data: {
-                "user": this.data.userInfo,
-                "act": "return",
-                "actDate": util.formatTime(new Date()),
-                "book": bookdata
-              }
-            })
-            console.log("after add")
-            wx.showToast({
-              title: "归还成功！",
-              success(res) {
-                console.log("after toast")
-                // 检索已借阅书籍
-                db.collection("ac_book").where({
-                  "borrowerId": api.userOpenId
-                }).get().then(res => {
-                  env.setData({
-                    bookBorrowedList: res.data
-                  })
+    wx.cloud.init()
+    let env = this
+    wx.cloud.callFunction({
+      name: 'returnBook',
+      data: {
+        isbn: e.currentTarget.dataset.isbn,
+        user: this.data.userInfo,
+        actDate: util.formatTime(new Date())
+      },
+      complete: res => {
+        console.log(res)
+        if (res.result != undefined) {
+          wx.showToast({
+            title: "归还成功！",
+            success(res) {
+              // 检索已借阅书籍
+              db.collection("ac_book").where({
+                "borrowerId": api.userOpenId
+              }).get().then(res => {
+                env.setData({
+                  bookBorrowedList: res.data
                 })
-              }
-            })
-          },
-          fail: err => {
-            wx.showToast({
-              title: "归还执行失败，请重试！",
-              icon: 'none'
-            })
-            return;
-          }
-        })
+              })
+            }
+          })
+        } else {
+          wx.showToast({
+            title: "归还失败，请返回重试！",
+            icon: 'none'
+          })
+        }
       }
     })
   }

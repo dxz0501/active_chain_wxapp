@@ -12,9 +12,9 @@ Page({
    */
   data: {
     op: '',
-    opstr:'',
-    bookdata:{},
-    userInputBookCode:'',
+    opstr: '',
+    bookdata: {},
+    userInputBookCode: '',
     userInfo: {},
     isUserAuth: false
   },
@@ -22,7 +22,12 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: function(options) {
+    if (!api.userPass) {
+      wx.navigateTo({
+        url: '../intro/index',
+      })
+    }
     app.bookISBNCallback = (data) => {
       console.log(data)
       this.setData({
@@ -31,29 +36,29 @@ Page({
     }
 
     var ops = ''
-    if(options.op == 'borrow'){
+    if (options.op == 'borrow') {
       ops = '借阅'
       db.collection("ac_book").where({
-        "isbn":options.isbn
+        "isbn": options.isbn
       }).get().then(res => {
-        if(res.data.length<1){
+        if (res.data.length < 1) {
           wx.showToast({
             title: "书籍未入库，借阅登记失败！",
             icon: 'none',
             success(res) {
-              setTimeout(function () {
+              setTimeout(function() {
                 wx.navigateBack({})
               })
             }
           })
-        }else{
+        } else {
           this.setData({
             bookdata: res.data[0]
           })
         }
       })
     }
-    if(options.op == 'share'){
+    if (options.op == 'share') {
       ops = '捐赠'
       api.getBookInfoByISBN(options.isbn, app.bookISBNCallback);
     }
@@ -66,14 +71,14 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
+  onReady: function() {
 
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: function() {
     var tmp_uinfo = app.globalData.userInfo
     tmp_uinfo["wxUid"] = api.userOpenId
     this.setData({
@@ -85,43 +90,43 @@ Page({
   /**
    * 生命周期函数--监听页面隐藏
    */
-  onHide: function () {
+  onHide: function() {
 
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function () {
+  onUnload: function() {
 
   },
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function () {
+  onPullDownRefresh: function() {
 
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
+  onReachBottom: function() {
 
   },
 
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
+  onShareAppMessage: function() {
 
   },
 
-  onTapDonate: function(e){
-    if(this.data.userInputBookCode.length<6){
+  onTapDonate: function(e) {
+    if (this.data.userInputBookCode.length < 6) {
       wx.showToast({
         title: "书籍编码格式不正确！",
-        icon:'none'
+        icon: 'none'
       })
       return;
     }
@@ -130,13 +135,13 @@ Page({
       "isbn": this.data.bookdata.isbn
     }).get().then(res => {
       console.log(res)
-      if(res.data.length > 0){
+      if (res.data.length > 0) {
         wx.showToast({
           title: "书籍已存在，请勿重复捐赠！",
           icon: 'none'
         })
         return;
-      }else{
+      } else {
         // 执行捐赠
         var tmp_bookdata = this.data.bookdata
         tmp_bookdata["donator"] = this.data.userInfo
@@ -151,7 +156,7 @@ Page({
             wx.showToast({
               title: "捐赠成功！",
               success(res) {
-                setTimeout(function () {
+                setTimeout(function() {
                   wx.navigateBack({})
                 })
               }
@@ -169,44 +174,42 @@ Page({
     })
   },
 
-  bookCodeChange: function(e){
+  bookCodeChange: function(e) {
     this.setData({
       userInputBookCode: e.detail.value,
     })
   },
 
-  onTapBorrow: function(e){
-    // 执行借阅
-    db.collection("ac_book").doc(this.data.bookdata["_id"]).update({
-      data:{
-        "borrower": this.data.userInfo,
-        "borrowerId": api.userOpenId,
-        "borrowDate": util.formatTime(new Date())
+  onTapBorrow: function(e) {
+    wx.cloud.init()
+    wx.cloud.callFunction({
+      name: 'borrowBook',
+      data: {
+        borrower: this.data.userInfo,
+        borrowerId: api.userOpenId,
+        borrowDate: util.formatTime(new Date()),
+        user: this.data.userInfo,
+        actDate: util.formatTime(new Date()),
+        book: this.data.bookdata,
+        docid: this.data.bookdata["_id"]
       },
-      success: res => {
-        db.collection("ac_book_borrow").add({
-          data:{
-            "user":this.data.userInfo,
-            "act":"borrow",
-            "actDate": util.formatTime(new Date()),
-            "book":this.data.bookdata
-          }
-        })
-        wx.showToast({
-          title: "借阅成功！",
-          success(res) {
-            setTimeout(function () {
-              wx.navigateBack({})
-            })
-          }
-        })
-      },
-      fail: err => {
-        wx.showToast({
-          title: "借阅执行失败，请返回重试！",
-          icon: 'none'
-        })
-        return;
+      complete: res => {
+        console.log(res)
+        if (res.result != undefined) {
+          wx.showToast({
+            title: "借阅成功！",
+            success(res) {
+              setTimeout(function() {
+                wx.navigateBack({})
+              }, 1500)
+            }
+          })
+        } else {
+          wx.showToast({
+            title: "借阅执行失败，请返回重试！",
+            icon: 'none'
+          })
+        }
       }
     })
   }

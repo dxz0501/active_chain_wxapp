@@ -2,9 +2,11 @@
 <view class="test-bg">
   <image src="../../lib/img/index_bg.png" class="bg-image" />
   <view class="page__bd">
-<label class="weui-cells__title">请输入内测密码：</label>
+
+<label class="weui-cells__title">请输入口令：</label>
 <input class="weui-input" type="text" password='true'bindinput="passInput"/>
 
 <button class="weui-btn" type="default" bindtap='returnMainUI' bindtap='onTapSubmit' bindinput='userpassChange'>提交验证</button>
+
 </view>
 </view>

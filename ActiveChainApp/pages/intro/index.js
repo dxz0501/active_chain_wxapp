@@ -1,6 +1,8 @@
 // pages/intro/index.js
 const app = getApp()
 var api = require('../../utils/api.js')
+wx.cloud.init()
+const db = wx.cloud.database()
 Page({
 
   /**
@@ -16,13 +18,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // var dt = new Date();
-    // dt.setDate(1);
-    // dt.setMonth(11);
-    // console.log(dt)
-    // dt.setMonth(dt.getMonth() + 1);
-    // dt.setDate(dt.getDate() - 1)
-    // console.log(dt)
+    db.collection("ac_auth").where({}).get().then(res => {
+      console.log(res)
+      if(res.data[0].needAuth){
+        return;
+      }else{
+        api.userPass = true
+        wx.switchTab({
+          url: '../main/mainui',
+        })
+      }
+    })
   },
 
   /**
@@ -45,7 +51,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-  
   },
 
   /**

@@ -6,21 +6,21 @@ let userPass = false
 
 let coeff = {
   "male_coeff": 2,
-    "female_coeff": 3,
-      "fit_coeff": 1,
-        "fat_coeff": 1.5,
-          "fit_fat": 75,
-    }
+  "female_coeff": 3,
+  "fit_coeff": 1,
+  "fat_coeff": 1.5,
+  "fit_fat": 75,
+}
 let sportsIndexDef = {
   "badminton": 1,
-    "basketball": 1,
-      "bicycle": 1,
-        "football": 1,
-          "gym": 1,
-            "pingpong": 1,
-              "running": 1,
-                "swimming": 1,
-                  "walking": 0.5
+  "basketball": 1,
+  "bicycle": 1,
+  "football": 1,
+  "gym": 1,
+  "pingpong": 1,
+  "running": 1,
+  "swimming": 1,
+  "walking": 0.5
 }
 
 wx.cloud.init()
@@ -30,7 +30,7 @@ const serverPrefix = () => {
   return "https://dimitrid.club/ac_backend"
 }
 
-const userQuery = (uoid,callback) => {
+const userQuery = (uoid, callback) => {
   console.log("userUqery")
   db.collection("wx_user").where({
     wxUid: uoid
@@ -52,7 +52,7 @@ const userUpdate = (wxUid, wxNickname, wxAvatarurl, uNickname, uGender, uWeight,
     success: res => {
       console.log("userUpdate Check ...")
       console.log(res)
-      if(res.data.length == 0){
+      if (res.data.length == 0) {
         db.collection("wx_user").add({
           data: {
             "wxUid": wxUid,
@@ -70,7 +70,7 @@ const userUpdate = (wxUid, wxNickname, wxAvatarurl, uNickname, uGender, uWeight,
             console.log("用户新增失败")
           }
         })
-      }else{
+      } else {
         db.collection("wx_user").doc(res.data[0]["_id"]).update({
           data: {
             "wxUid": wxUid,
@@ -91,7 +91,7 @@ const userUpdate = (wxUid, wxNickname, wxAvatarurl, uNickname, uGender, uWeight,
       }
     },
     fail: err => {
-      
+
     }
   })
 
@@ -119,7 +119,7 @@ const userUpdate = (wxUid, wxNickname, wxAvatarurl, uNickname, uGender, uWeight,
   // })
 }
 
-const statMStat = (uoid,callback) => {
+const statMStat = (uoid, callback) => {
   console.log("INPUT - " + uoid)
   const $ = db.command.aggregate
   let ret = {}
@@ -130,7 +130,7 @@ const statMStat = (uoid,callback) => {
   var df = new Date()
   var dt = new Date()
   df.setDate(1)
-  console.log("this - "+util.formatDate(df) + " | " + util.formatDate(dt))
+  console.log("this - " + util.formatDate(df) + " | " + util.formatDate(dt))
   // 查询汇总当前用户本月积分
   db.collection("ac_info").where({
     wxUid: uoid,
@@ -147,7 +147,8 @@ const statMStat = (uoid,callback) => {
       markingT: $.sum("$marking")
     }).end().then(res => {
       for (var i = 0; i < res.list.length; i++) {
-        if(res.list[i].markingT > res.marking) res.rank += 1
+        console.log(res.list[i])
+        if (res.list[i].markingT > ret.marking) ret.rank = ret.rank + 1
       }
       // 查询汇总当前用户上月积分
       df.setDate(df.getDate() - 1)
@@ -169,12 +170,12 @@ const statMStat = (uoid,callback) => {
           markingTLast: $.sum("$marking")
         }).end().then(res => {
           for (var i = 0; i < res.list.length; i++) {
-            if (res.list[i].markingTLast > res.markingLast) res.rankLast += 1
+            if (res.list[i].markingTLast > ret.markingLast) ret.rankLast = ret.rankLast + 1
           }
           callback(ret)
           // 存储当前用户统计结果
           db.collection("ac_stat").where({
-            "wxUid":uoid
+            "wxUid": uoid
           }).remove().then(res => {
             db.collection("ac_stat").add({
               data: {
@@ -186,12 +187,12 @@ const statMStat = (uoid,callback) => {
               }
             })
           })
-          
+
         })
       })
     })
   })
-  
+
   // wx.request({
   //   url: serverPrefix() + '/stat/mstat/' + uoid,
   //   success(res) {
@@ -208,23 +209,34 @@ const statMRankList = (callback) => {
   db.collection("ac_stat").aggregate().match({
     wxUid: db.command.neq("")
   }).sort({
-    rank: 1
+    marking: -1
   }).end().then(res => {
-    //制作字典
-    let acStatDict = {}
-    for (var i = 0; i < res.list.length; i++) {
-      acStatDict[res.list[i].wxUid] = res.list[i]
-    }
     //匹配用户
     db.collection("wx_user").where({
       wxUid: db.command.neq("")
-    }).get().then(res => {
-      for (var i = 0; i < res.data.length; i++) {
-        let retItem = {}
-        retItem.rankRes = acStatDict[res.data[i].wxUid]
-        retItem.wxUser = res.data[i]
-        ret.push(retItem)
+    }).get().then(resUser => {
+      let order = 0
+      let curMarking = -1
+      for (var i = 0; i < res.list.length; i++) {
+        for (var j = 0; j < resUser.data.length; j++) {
+          if (resUser.data[j].wxUid == res.list[i].wxUid) {
+            let retItem = {}
+            retItem.rankRes = res.list[i]
+            retItem.wxUser = resUser.data[j]
+            ret.push(retItem)
+            if(curMarking != res.list[i].marking){
+              order += 1
+              curMarking = res.list[i].marking
+            }
+            res.list[i].rank = order
+            break;
+          } else {
+            continue;
+          }
+        }
       }
+
+
       callback(ret)
     })
   })
@@ -244,23 +256,35 @@ const statMRankListLast = (callback) => {
   db.collection("ac_stat").aggregate().match({
     wxUid: db.command.neq("")
   }).sort({
-    rankLast: 1
+    markingLast: -1
   }).end().then(res => {
-    //制作字典
-    let acStatDict = {}
-    for (var i = 0; i < res.list.length; i++) {
-      acStatDict[res.list[i].wxUid] = res.list[i]
-    }
     //匹配用户
     db.collection("wx_user").where({
       wxUid: db.command.neq("")
-    }).get().then(res => {
-      for (var i = 0; i < res.data.length; i++) {
-        let retItem = {}
-        retItem.rankRes = acStatDict[res.data[i].wxUid]
-        retItem.wxUser = res.data[i]
-        ret.push(retItem)
+    }).get().then(resUser => {
+      //制作字典
+      let order = 0
+      let curMarking = -1
+      for (var i = 0; i < res.list.length; i++) {
+        for (var j = 0; j < resUser.data.length; j++) {
+          if (res.list[i].wxUid == resUser.data[j].wxUid) {
+            let retItem = {}
+            retItem.rankRes = res.list[i]
+            retItem.wxUser = resUser.data[j]
+            ret.push(retItem)
+            if(curMarking != res.list[i].markingLast){
+              order += 1
+              curMarking = res.list[i].markingLast
+            }
+            res.list[i].rankLast = order
+            break;
+          } else{
+            continue;
+          }
+        }
       }
+
+
       callback(ret)
     })
   })
@@ -281,7 +305,7 @@ const infoAdd = (wxUid, acType, acAmount, acNote, acDate, callback) => {
   }).get({
     success: res => {
 
-      if(res.data.length > 0){
+      if (res.data.length > 0) {
         var genderIndex = 1
         var fatIndex = 1
         var sportTypeIndex = 1
@@ -299,7 +323,7 @@ const infoAdd = (wxUid, acType, acAmount, acNote, acDate, callback) => {
         }
 
         sportTypeIndex = sportsIndexDef[acType]
-        console.log("index - " + genderIndex +"|"+ fatIndex +"|"+ sportTypeIndex)
+        console.log("index - " + genderIndex + "|" + fatIndex + "|" + sportTypeIndex)
         var marking = acAmount * genderIndex * fatIndex * sportTypeIndex
 
         db.collection("ac_info").add({
@@ -314,11 +338,15 @@ const infoAdd = (wxUid, acType, acAmount, acNote, acDate, callback) => {
           },
           success: res => {
             console.log("记录新增成功")
-            callback({ res: true })
+            callback({
+              res: true
+            })
           },
           fail: err => {
             console.log("记录新增失败")
-            callback({ res: false })
+            callback({
+              res: false
+            })
           }
         })
       }
@@ -357,7 +385,7 @@ const infoQuery = (uoid, sdate, tdate, callback) => {
     success: res => {
       console.log(res.data)
       let ret = []
-      for(var i=0; i<res.data.length; i++){
+      for (var i = 0; i < res.data.length; i++) {
         let retItem = {}
         retItem["info"] = res.data[i]
         retItem["marking"] = res.data[i].marking
@@ -385,21 +413,29 @@ const infoDelete = (sid, callback) => {
     "sid": sid,
   }).get({
     success: res => {
-      if(res.data.length > 0){
+      if (res.data.length > 0) {
         db.collection("ac_info").doc(res.data[0]["_id"]).remove({
           success: res => {
-            callback({ res: true })
+            callback({
+              res: true
+            })
           },
           fail: err => {
-            callback({ res: true })
+            callback({
+              res: true
+            })
           }
         })
-      }else{
-        callback({ res: false })
+      } else {
+        callback({
+          res: false
+        })
       }
     },
     fail: err => {
-      callback({ res: false })
+      callback({
+        res: false
+      })
     }
   })
   // wx.request({
@@ -414,7 +450,10 @@ const infoDelete = (sid, callback) => {
 }
 
 const isAuth = (callback) => {
-  callback({"res":true, "needAuth":1})
+  callback({
+    "res": true,
+    "needAuth": 1
+  })
   // wx.request({
   //   url: serverPrefix() + '/info/isauth',
   //   success(res) {
@@ -426,17 +465,17 @@ const isAuth = (callback) => {
   // })
 }
 
-const getBookInfoByISBN = (isbn, callback) =>{
-    wx.request({
-      url: "https://route.showapi.com/1626-1?showapi_appid=163626&showapi_sign=a4de2d8293504aedaa09390a3c985dd5&isbn=" + isbn,
+const getBookInfoByISBN = (isbn, callback) => {
+  wx.request({
+    url: "https://route.showapi.com/1626-1?showapi_appid=163626&showapi_sign=a4de2d8293504aedaa09390a3c985dd5&isbn=" + isbn,
     success(res) {
       console.log(res)
-      if (res.data.showapi_res_body.ret_code == 0){
+      if (res.data.showapi_res_body.ret_code == 0) {
         callback(res.data.showapi_res_body.data)
-      }else{
+      } else {
         callback(null)
       }
-      
+
     },
     fail() {
       callback(null)

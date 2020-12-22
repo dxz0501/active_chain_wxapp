@@ -132,12 +132,12 @@ const statMStat = (uoid, callback) => {
   df.setDate(1)
   console.log("this - " + util.formatDate(df) + " | " + util.formatDate(dt))
   // 查询汇总当前用户本月积分
-  db.collection("ac_info").where({
+  db.collection("ac_info").aggregate().match({
     wxUid: uoid,
     acDate: db.command.gte(util.formatDate(df)).and(db.command.lte(util.formatDate(dt))),
-  }).get().then(res => {
-    for (var i = 0; i < res.data.length; i++) {
-      ret.marking += res.data[i].marking
+  }).limit(200).end().then(res => {
+    for (var i = 0; i < res.list.length; i++) {
+      ret.marking += res.list[i].marking
     }
     // 查询汇总当前用户本月排名
     db.collection("ac_info").aggregate().match({
@@ -145,7 +145,7 @@ const statMStat = (uoid, callback) => {
     }).group({
       _id: "$wxUid",
       markingT: $.sum("$marking")
-    }).end().then(res => {
+    }).limit(200).end().then(res => {
       for (var i = 0; i < res.list.length; i++) {
         console.log(res.list[i])
         if (res.list[i].markingT > ret.marking) ret.rank = ret.rank + 1
@@ -155,12 +155,12 @@ const statMStat = (uoid, callback) => {
       dt.setMonth(df.getMonth())
       dt.setDate(1)
       console.log("last - " + util.formatDate(dt) + " | " + util.formatDate(df))
-      db.collection("ac_info").where({
+      db.collection("ac_info").aggregate().match({
         wxUid: uoid,
         acDate: db.command.gte(util.formatDate(dt)).and(db.command.lte(util.formatDate(df))),
-      }).get().then(res => {
-        for (var i = 0; i < res.data.length; i++) {
-          ret.markingLast += res.data[i].marking
+      }).limit(200).end().then(res => {
+        for (var i = 0; i < res.list.length; i++) {
+          ret.markingLast += res.list[i].marking
         }
         // 查询汇总当前用户上月排名
         db.collection("ac_info").aggregate().match({
@@ -168,7 +168,7 @@ const statMStat = (uoid, callback) => {
         }).group({
           _id: "$wxUid",
           markingTLast: $.sum("$marking")
-        }).end().then(res => {
+        }).limit(200).end().then(res => {
           for (var i = 0; i < res.list.length; i++) {
             if (res.list[i].markingTLast > ret.markingLast) ret.rankLast = ret.rankLast + 1
           }
@@ -210,35 +210,42 @@ const statMRankList = (callback) => {
     wxUid: db.command.neq("")
   }).sort({
     marking: -1
-  }).end().then(res => {
+  }).limit(100).end().then(res => {
     //匹配用户
-    db.collection("wx_user").where({
+    db.collection("wx_user").aggregate().match({
       wxUid: db.command.neq("")
-    }).get().then(resUser => {
+    }).limit(100).end().then(resUser => {
+      var df = new Date()
+      var dt = new Date()
+      df.setDate(1)
+      console.log("this - " + util.formatDate(df) + " | " + util.formatDate(dt))
+      db.collection("ac_info").aggregate().match({
+        acDate: db.command.gte(util.formatDate(df)).and(db.command.lte(util.formatDate(dt))),
+      }).group({
+        _id: "$wxUid",
+      }).limit(100).end().then(resInfo => { 
       let order = 0
       let curMarking = -1
       for (var i = 0; i < res.list.length; i++) {
-        for (var j = 0; j < resUser.data.length; j++) {
-          if (resUser.data[j].wxUid == res.list[i].wxUid) {
+        for (var j = 0; j < resUser.list.length; j++) {
+          for (var k = 0; k < resInfo.list.length; k++) { 
+          if (resUser.list[j].wxUid == res.list[i].wxUid && resUser.list[j].wxUid == resInfo.list[k]._id && res.list[i].wxUid == resInfo.list[k]._id)  {
             let retItem = {}
             retItem.rankRes = res.list[i]
-            retItem.wxUser = resUser.data[j]
+            retItem.wxUser = resUser.list[j]
             ret.push(retItem)
             if(curMarking != res.list[i].marking){
               order += 1
               curMarking = res.list[i].marking
             }
             res.list[i].rank = order
-            break;
-          } else {
-            continue;
-          }
+          } 
         }
       }
-
-
+    }
       callback(ret)
     })
+  })
   })
   // wx.request({
   //   url: serverPrefix() + '/stat/mranklist/',
@@ -250,43 +257,51 @@ const statMRankList = (callback) => {
   //   }
   // })
 }
-
 const statMRankListLast = (callback) => {
   let ret = []
   db.collection("ac_stat").aggregate().match({
     wxUid: db.command.neq("")
   }).sort({
     markingLast: -1
-  }).end().then(res => {
+  }).limit(100).end().then(res => {
     //匹配用户
-    db.collection("wx_user").where({
+    db.collection("wx_user").aggregate().match({
       wxUid: db.command.neq("")
-    }).get().then(resUser => {
-      //制作字典
+    }).limit(100).end().then(resUser => {
+      var df = new Date()
+      var dt = new Date()
+      df.setDate(1)
+      df.setDate(df.getDate() - 1)
+      dt.setMonth(df.getMonth())
+      dt.setDate(1)
+      console.log("last - " + util.formatDate(dt) + " | " + util.formatDate(df))
+      db.collection("ac_info").aggregate().match({
+        acDate: db.command.gte(util.formatDate(dt)).and(db.command.lte(util.formatDate(df))),
+      }).group({
+        _id: "$wxUid",
+      }).limit(100).end().then(resInfo => { 
       let order = 0
       let curMarking = -1
       for (var i = 0; i < res.list.length; i++) {
-        for (var j = 0; j < resUser.data.length; j++) {
-          if (res.list[i].wxUid == resUser.data[j].wxUid) {
+        for (var j = 0; j < resUser.list.length; j++) {
+          for (var k = 0; k < resInfo.list.length; k++) { 
+          if (resUser.list[j].wxUid == res.list[i].wxUid && resUser.list[j].wxUid == resInfo.list[k]._id && res.list[i].wxUid == resInfo.list[k]._id)  {
             let retItem = {}
             retItem.rankRes = res.list[i]
-            retItem.wxUser = resUser.data[j]
+            retItem.wxUser = resUser.list[j]
             ret.push(retItem)
             if(curMarking != res.list[i].markingLast){
               order += 1
               curMarking = res.list[i].markingLast
             }
             res.list[i].rankLast = order
-            break;
-          } else{
-            continue;
-          }
+          } 
         }
       }
-
-
+    }
       callback(ret)
     })
+  })
   })
   // wx.request({
   //   url: serverPrefix() + '/stat/mranklistlast/',

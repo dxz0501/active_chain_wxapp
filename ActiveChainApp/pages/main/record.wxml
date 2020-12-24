@@ -35,6 +35,7 @@
             </view>
             </view>
 <view class="weui-cells__tips">计次/计时根据运动单位填写，表示1次或1小时(含小数)</view>
+<block wx:if="{{ifInput}}">
             <view class="weui-cells__title">运动备注</view>
         <view class="weui-cells weui-cells_after-title">
             <view class="weui-cell">
@@ -44,6 +45,7 @@
             </view>
         
         </view>
+        </block>
 
 <view class="weui-cells__tips">数据提交后，月度总分及排名信息会在1小时内完成更新</view>
         <view class="weui-btn-area">

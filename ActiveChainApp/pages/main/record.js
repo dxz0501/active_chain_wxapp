@@ -3,6 +3,9 @@ const app = getApp()
 var util = require('../../utils/util.js')
 var api = require('../../utils/api.js')
 
+wx.cloud.init()
+const db = wx.cloud.database()
+
 Page({
 
   /**
@@ -16,7 +19,8 @@ Page({
     date: '',
     amount: 1,
     ifAmountErr: true,
-    note: ''
+    note: '',
+    ifInput: false
   },
 
   /**
@@ -38,6 +42,15 @@ Page({
       minDate: util.formatDate(df),
       maxDate: util.formatDate(dt),
         date: util.formatDate(dt)
+    })
+
+    db.collection("ac_canNote").where({}).get().then(res => {
+      console.log("1")
+      console.log(res)
+      console.log("2")
+        this.setData({
+          ifInput: res.data[0].ifInput
+        })
     })
   },
 

@@ -208,12 +208,7 @@ const statMStat = (uoid, callback) => {
 
 const statMRankList = (callback) => {
   let ret = []
-  db.collection("ac_stat").aggregate().match({
-    wxUid: db.command.neq("")
-  }).sort({
-    marking: -1
-  }).limit(100).end().then(res => {
-    //匹配用户
+  const $ = db.command.aggregate
     db.collection("wx_user").aggregate().match({
       wxUid: db.command.neq("")
     }).limit(100).end().then(resUser => {
@@ -226,30 +221,35 @@ const statMRankList = (callback) => {
         acDate: db.command.gte(util.formatDate(df)).and(db.command.lte(util.formatDate(dt))),
       }).group({
         _id: "$wxUid",
+        markingT: $.sum("$marking")
+      }).sort({
+        markingT: -1
       }).limit(100).end().then(resInfo => { 
       let order = 0
       let curMarking = -1
-      for (var i = 0; i < res.list.length; i++) {
+      for (var i = 0; i < resInfo.list.length; i++) {
         for (var j = 0; j < resUser.list.length; j++) {
-          for (var k = 0; k < resInfo.list.length; k++) { 
-          if (resUser.list[j].wxUid == res.list[i].wxUid && resUser.list[j].wxUid == resInfo.list[k]._id && res.list[i].wxUid == resInfo.list[k]._id)  {
+          if (resUser.list[j].wxUid == resInfo.list[i]._id)  {
             let retItem = {}
-            retItem.rankRes = res.list[i]
+            retItem.rankRes = resInfo.list[i]
             retItem.wxUser = resUser.list[j]
             ret.push(retItem)
-            if(curMarking != res.list[i].marking){
+            if(curMarking != resInfo.list[i].markingT){
               order += 1
-              curMarking = res.list[i].marking
+              curMarking = resInfo.list[i].markingT
+              resInfo.list[i].rank = order
+            }else{
+              resInfo.list[i].rank =  order 
+              order += 1
             }
-            res.list[i].rank = order
-          } 
-        }
+            resInfo.list[i].marking = resInfo.list[i]. markingT
+          }     
       }
     }
       callback(ret)
     })
   })
-  })
+
   // wx.request({
   //   url: serverPrefix() + '/stat/mranklist/',
   //   success(res) {
@@ -262,12 +262,7 @@ const statMRankList = (callback) => {
 }
 const statMRankListLast = (callback) => {
   let ret = []
-  db.collection("ac_stat").aggregate().match({
-    wxUid: db.command.neq("")
-  }).sort({
-    markingLast: -1
-  }).limit(100).end().then(res => {
-    //匹配用户
+  const $ = db.command.aggregate
     db.collection("wx_user").aggregate().match({
       wxUid: db.command.neq("")
     }).limit(100).end().then(resUser => {
@@ -283,30 +278,37 @@ const statMRankListLast = (callback) => {
         acDate: db.command.gte(util.formatDate(dt)).and(db.command.lte(util.formatDate(df))),
       }).group({
         _id: "$wxUid",
+        markingTLast: $.sum("$marking")
+      }).sort({
+        markingTLast: -1
       }).limit(100).end().then(resInfo => { 
-      let order = 0
+      let order = 0 
+      let cout = false 
       let curMarking = -1
-      for (var i = 0; i < res.list.length; i++) {
-        for (var j = 0; j < resUser.list.length; j++) {
-          for (var k = 0; k < resInfo.list.length; k++) { 
-          if (resUser.list[j].wxUid == res.list[i].wxUid && resUser.list[j].wxUid == resInfo.list[k]._id && res.list[i].wxUid == resInfo.list[k]._id)  {
+        for (var i = 0; i < resInfo.list.length; i++) {
+          for (var j = 0; j < resUser.list.length; j++) { 
+          if (resUser.list[j].wxUid == resInfo.list[i]._id ) {
             let retItem = {}
-            retItem.rankRes = res.list[i]
+            retItem.rankRes = resInfo.list[i]
             retItem.wxUser = resUser.list[j]
             ret.push(retItem)
-            if(curMarking != res.list[i].markingLast){
+            if(curMarking != resInfo.list[i].markingTLast){
               order += 1
-              curMarking = res.list[i].markingLast
+              curMarking = resInfo.list[i].markingTLast 
+              resInfo.list[i].rankLast =  order 
+            }else{
+              resInfo.list[i].rankLast =  order 
+              order += 1
             }
-            res.list[i].rankLast = order
+           
+            resInfo.list[i].markingLast = resInfo.list[i]. markingTLast
           } 
         }
-      }
-    }
+      }  
       callback(ret)
     })
   })
-  })
+
   // wx.request({
   //   url: serverPrefix() + '/stat/mranklistlast/',
   //   success(res) {

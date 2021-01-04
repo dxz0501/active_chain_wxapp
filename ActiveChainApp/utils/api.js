@@ -130,6 +130,7 @@ const statMStat = (uoid, callback) => {
   var df = new Date()
   var dt = new Date()
   df.setDate(1)
+  dt.setDate(31)
   console.log("this - " + util.formatDate(df) + " | " + util.formatDate(dt))
   // 查询汇总当前用户本月积分
   db.collection("ac_info").aggregate().match({
@@ -151,9 +152,10 @@ const statMStat = (uoid, callback) => {
         if (res.list[i].markingT > ret.marking) ret.rank = ret.rank + 1
       }
       // 查询汇总当前用户上月积分
-      df.setDate(df.getDate() - 1)
-      dt.setMonth(df.getMonth())
+      dt.setMonth(df.getMonth()-1)
+      df.setMonth(df.getMonth()-1)
       dt.setDate(1)
+      df.setDate(31)
       console.log("last - " + util.formatDate(dt) + " | " + util.formatDate(df))
       db.collection("ac_info").aggregate().match({
         wxUid: uoid,
@@ -218,6 +220,7 @@ const statMRankList = (callback) => {
       var df = new Date()
       var dt = new Date()
       df.setDate(1)
+      dt.setDate(31)
       console.log("this - " + util.formatDate(df) + " | " + util.formatDate(dt))
       db.collection("ac_info").aggregate().match({
         acDate: db.command.gte(util.formatDate(df)).and(db.command.lte(util.formatDate(dt))),
@@ -271,9 +274,10 @@ const statMRankListLast = (callback) => {
       var df = new Date()
       var dt = new Date()
       df.setDate(1)
-      df.setDate(df.getDate() - 1)
-      dt.setMonth(df.getMonth())
+      dt.setMonth(df.getMonth()-1)
+      df.setMonth(df.getMonth()-1)
       dt.setDate(1)
+      df.setDate(31)
       console.log("last - " + util.formatDate(dt) + " | " + util.formatDate(df))
       db.collection("ac_info").aggregate().match({
         acDate: db.command.gte(util.formatDate(dt)).and(db.command.lte(util.formatDate(df))),

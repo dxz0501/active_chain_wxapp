@@ -396,25 +396,25 @@ const infoAdd = (wxUid, acType, acAmount, acNote, acDate, callback) => {
 }
 
 const infoQuery = (uoid, sdate, tdate, callback) => {
-  db.collection("ac_info").where({
+  db.collection("ac_info").aggregate()
+  .match({
     "wxUid": uoid,
     "acDate": db.command.gte(sdate).and(db.command.lte(tdate)),
-  }).get({
-    success: res => {
-      console.log(res.data)
+  }).sort({
+    acDate: 1
+  }).limit(150).end().then(
+     res => {
+      console.log(res.list)
       let ret = []
-      for (var i = 0; i < res.data.length; i++) {
+      for (var i = 0; i < res.list.length; i++) {
         let retItem = {}
-        retItem["info"] = res.data[i]
-        retItem["marking"] = res.data[i].marking
+        retItem["info"] = res.list[i]
+        retItem["marking"] = res.list[i].marking
         ret.push(retItem)
       }
       callback(ret)
-    },
-    fail: err => {
-
     }
-  })
+  )
   // wx.request({
   //   url: serverPrefix() + '/info/query/' + uoid + '/' + sdate + '/' + tdate,
   //   success(res) {
